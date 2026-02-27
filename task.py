@@ -87,6 +87,11 @@ class AddressBook(UserDict):
     def find(self, name: str):
         return self.data.get(name)
 
+    def __str__(self):
+        if not self.data:
+            return "Address book is empty."
+        return "\n".join(str(record) for record in self.data.values())
+
     def get_upcoming_birthdays(self):
         today = datetime.today().date()
         end = today + timedelta(days=7)
@@ -114,6 +119,7 @@ class AddressBook(UserDict):
         return result
 
 
+
 # ===================== HANDLERS =====================
 @input_error
 def add_contact(args, book):
@@ -135,8 +141,6 @@ def add_contact(args, book):
 def change_contact(args, book):
     name, old_phone, new_phone = args
     record = book.find(name)
-    if record is None:
-        raise AttributeError
     record.edit_phone(old_phone, new_phone)
     return "Phone number updated."
 
@@ -145,8 +149,6 @@ def change_contact(args, book):
 def show_phone(args, book):
     name = args[0]
     record = book.find(name)
-    if record is None:
-        raise AttributeError
     return "; ".join(p.value for p in record.phones)
 
 
@@ -154,8 +156,6 @@ def show_phone(args, book):
 def add_birthday(args, book):
     name, birthday = args
     record = book.find(name)
-    if record is None:
-        raise AttributeError
     record.add_birthday(birthday)
     return "Birthday added."
 
@@ -164,8 +164,6 @@ def add_birthday(args, book):
 def show_birthday(args, book):
     name = args[0]
     record = book.find(name)
-    if record is None:
-        raise AttributeError
     if not record.birthday:
         return "Birthday not set."
     return record.birthday.value
